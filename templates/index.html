@@ -344,7 +344,7 @@
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             // Uncomment to use real backend:
-            // fetchAllData();
+            fetchAllData();
             updateUI();
         });
 
@@ -472,7 +472,7 @@
         function updateTimeline(weekData) {
             const weeklyTotal = 
                 weekData.Jonathan.reduce((a, b) => a + b, 0) + 
-                weekData.Kathy.reduce((a, b) => a + b, 0);
+                weekData.Kathy.reduce((a, b) =>a + b, 0);
             
             const weeklyRate = weeklyTotal > 0 ? weeklyTotal : 1; 
             
@@ -567,16 +567,22 @@
 
         async function assignExpense(who) {
             if (selectedExpenseId !== null) {
-                const expIndex = expenses.findIndex(e => e.id === selectedExpenseId);
-                if (expIndex !== -1) {
-                    // Simulated API Call:
-                    // const res = await fetch(`http://localhost:5000/api/expenses/${selectedExpenseId}`, ...);
-                    // Update local state directly for frontend demo
-                    expenses[expIndex].who = who;
+                try {
+                    const res = await fetch(`http://localhost:5000/api/expenses/${selectedExpenseId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ who })
+                    });
+                    if (res.ok) {
+                        closeModal('assign-modal');
+                        fetchAllData();
+                    } else {
+                        console.error('Failed to update expense');
+                    }
+                } catch (e) {
+                    console.error('Error updating expense:', e);
                 }
             }
-            closeModal('assign-modal');
-            updateUI();
         }
 
         // 2. Goal Edit Modal
@@ -587,12 +593,24 @@
         }
 
         async function saveGoals() {
-            currentTotalSavings = parseFloat(document.getElementById('edit-current-savings').value);
-            HOUSE_GOAL = parseFloat(document.getElementById('edit-goal-amount').value);
+            const currentSavings = parseFloat(document.getElementById('edit-current-savings').value);
+            const houseGoal = parseFloat(document.getElementById('edit-goal-amount').value);
             
-            // API Call simulation
-            closeModal('goal-modal');
-            updateUI();
+            try {
+                const res = await fetch('http://localhost:5000/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_savings: currentSavings, house_goal: houseGoal })
+                });
+                if (res.ok) {
+                    closeModal('goal-modal');
+                    fetchAllData();
+                } else {
+                    console.error('Failed to update settings');
+                }
+            } catch (e) {
+                console.error('Error updating settings:', e);
+            }
         }
 
         // 3. Max Save Edit Modal
@@ -602,9 +620,22 @@
         }
 
         async function saveMax() {
-            DAILY_MAX = parseFloat(document.getElementById('edit-daily-max').value);
-            closeModal('max-modal');
-            updateUI();
+            const dailyMax = parseFloat(document.getElementById('edit-daily-max').value);
+            try {
+                const res = await fetch('http://localhost:5000/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ daily_max: dailyMax })
+                });
+                if (res.ok) {
+                    closeModal('max-modal');
+                    fetchAllData();
+                } else {
+                    console.error('Failed to update settings');
+                }
+            } catch (e) {
+                console.error('Error updating settings:', e);
+            }
         }
 
         // 4. Edit Expense Modal
@@ -629,20 +660,37 @@
             const who = document.getElementById('edit-who-input').value;
             const day = parseInt(document.getElementById('edit-day-input').value);
 
-            const expIndex = expenses.findIndex(e => e.id === selectedExpenseId);
-            if (expIndex !== -1) {
-                expenses[expIndex] = { ...expenses[expIndex], desc, amount, who, day };
+            try {
+                const res = await fetch(`http://localhost:5000/api/expenses/${selectedExpenseId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ desc, amount, day, who })
+                });
+                if (res.ok) {
+                    closeModal('edit-expense-modal');
+                    fetchAllData();
+                } else {
+                    console.error('Failed to update expense');
+                }
+            } catch (e) {
+                console.error('Error updating expense:', e);
             }
-
-            closeModal('edit-expense-modal');
-            updateUI();
         });
 
         async function deleteExpense(id) {
             if (confirm('Are you sure you want to delete this expense?')) {
-                // API Call simulation
-                expenses = expenses.filter(exp => exp.id !== id);
-                updateUI();
+                try {
+                    const res = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (res.ok) {
+                        fetchAllData();
+                    } else {
+                        console.error('Failed to delete expense');
+                    }
+                } catch (e) {
+                    console.error('Error deleting expense:', e);
+                }
             }
         }
 
@@ -657,19 +705,21 @@
             const who = document.getElementById('who-input').value;
             const day = parseInt(document.getElementById('day-input').value);
 
-            const newExpense = {
-                id: Date.now(),
-                desc,
-                amount,
-                who,
-                day
-            };
-            
-            // Real API Push simulation
-            expenses.push(newExpense);
-            
-            e.target.reset();
-            updateUI();
+            try {
+                const res = await fetch('http://localhost:5000/api/expenses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ desc, amount, who, day })
+                });
+                if (res.ok) {
+                    e.target.reset();
+                    fetchAllData();
+                } else {
+                    console.error('Failed to add expense');
+                }
+            } catch (e) {
+                console.error('Error adding expense:', e);
+            }
         });
 
     </script>

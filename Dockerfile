@@ -11,4 +11,4 @@ ENV FLASK_RUN_HOST=0.0.0.0
 
 EXPOSE 5100
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5100", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5100", "--timeout", "120", "app:app"]

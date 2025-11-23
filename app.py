@@ -1,9 +1,14 @@
 from flask import Flask, jsonify, request, render_template, g
 from flask_cors import CORS
 import sqlite3
+import logging
+import time
 
 app = Flask(__name__)
 CORS(app)  # Allows cross-origin requests if you develop separately, but good to have.
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 DATABASE = 'savings.db'
 
@@ -85,12 +90,16 @@ def index():
 @app.route('/api/data', methods=['GET'])
 def get_data():
     """Get all initial data (settings + expenses)"""
+    start_time = time.time()
+    logger.info("Handling GET /api/data")
     db = get_db()
     cursor = db.cursor()
 
     settings = cursor.execute("SELECT daily_max, house_goal, current_savings FROM settings").fetchone()
     expenses = cursor.execute("SELECT id, desc, amount, who, day, category FROM expenses").fetchall()
 
+    duration = time.time() - start_time
+    logger.info(f"Completed GET /api/data in {duration:.2f} seconds")
     return jsonify({
         "settings": dict(settings) if settings else {},
         "expenses": [dict(expense) for expense in expenses]
@@ -98,6 +107,8 @@ def get_data():
 
 @app.route('/api/expenses', methods=['POST'])
 def add_expense():
+    start_time = time.time()
+    logger.info("Handling POST /api/expenses")
     data = request.json
     db = get_db()
     cursor = db.cursor()
@@ -106,10 +117,14 @@ def add_expense():
     db.commit()
     new_expense_id = cursor.lastrowid
     new_expense = cursor.execute("SELECT id, desc, amount, who, day, category FROM expenses WHERE id = ?", (new_expense_id,)).fetchone()
+    duration = time.time() - start_time
+    logger.info(f"Completed POST /api/expenses in {duration:.2f} seconds")
     return jsonify(dict(new_expense)), 201
 
 @app.route('/api/expenses/<int:expense_id>', methods=['PATCH'])
 def update_expense(expense_id):
+    start_time = time.time()
+    logger.info(f"Handling PATCH /api/expenses/{expense_id}")
     data = request.json
     db = get_db()
     cursor = db.cursor()
@@ -134,6 +149,8 @@ def update_expense(expense_id):
         params.append(int(data['day']))
 
     if not updates:
+        duration = time.time() - start_time
+        logger.info(f"Completed PATCH /api/expenses/{expense_id} (no updates) in {duration:.2f} seconds")
         return jsonify({"error": "No fields provided for update"}), 400
 
     params.append(expense_id)
@@ -142,12 +159,17 @@ def update_expense(expense_id):
     db.commit()
     
     expense = cursor.execute("SELECT id, desc, amount, who, day, category FROM expenses WHERE id = ?", (expense_id,)).fetchone()
+    duration = time.time() - start_time
     if expense:
+        logger.info(f"Completed PATCH /api/expenses/{expense_id} in {duration:.2f} seconds")
         return jsonify(dict(expense))
+    logger.info(f"Completed PATCH /api/expenses/{expense_id} (not found) in {duration:.2f} seconds")
     return jsonify({"error": "Expense not found"}), 404
 
 @app.route('/api/settings', methods=['POST'])
 def update_settings():
+    start_time = time.time()
+    logger.info("Handling POST /api/settings")
     data = request.json
     db = get_db()
     cursor = db.cursor()
@@ -155,6 +177,8 @@ def update_settings():
     # Fetch current settings to update
     settings = cursor.execute("SELECT daily_max, house_goal, current_savings FROM settings").fetchone()
     if not settings:
+        duration = time.time() - start_time
+        logger.info(f"Completed POST /api/settings (not found) in {duration:.2f} seconds")
         return jsonify({"error": "Settings not found"}), 404
     
     updated_settings = dict(settings)
@@ -166,14 +190,20 @@ def update_settings():
                    (updated_settings['daily_max'], updated_settings['house_goal'], updated_settings['current_savings']))
     db.commit()
     
+    duration = time.time() - start_time
+    logger.info(f"Completed POST /api/settings in {duration:.2f} seconds")
     return jsonify(updated_settings)
 
 @app.route('/api/expenses/<int:expense_id>', methods=['DELETE'])
 def delete_expense(expense_id):
+    start_time = time.time()
+    logger.info(f"Handling DELETE /api/expenses/{expense_id}")
     db = get_db()
     cursor = db.cursor()
     cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
     db.commit()
+    duration = time.time() - start_time
+    logger.info(f"Completed DELETE /api/expenses/{expense_id} in {duration:.2f} seconds")
     return jsonify({"message": "Expense deleted successfully"}), 200
 
 if __name__ == '__main__':
