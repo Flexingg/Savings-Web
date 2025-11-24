@@ -86,6 +86,26 @@
                 <span>Start</span>
                 <span>Estimated Purchase: <span id="estimated-date" class="text-blue-600 dark:text-blue-400 font-bold">Calculating...</span></span>
             </div>
+
+            <!-- Week Navigation Controls -->
+            <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-xl p-3 mt-4">
+                <button onclick="navigateWeek(-1)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
+                    <i class="fas fa-chevron-left text-gray-600 dark:text-gray-300"></i>
+                </button>
+                
+                <div class="text-center">
+                    <div class="text-lg font-bold text-gray-800 dark:text-gray-100" id="week-display">Nov 17-23, 2025</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Current Week</div>
+                </div>
+                
+                <button onclick="navigateWeek(1)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
+                    <i class="fas fa-chevron-right text-gray-600 dark:text-gray-300"></i>
+                </button>
+                
+                <button onclick="goToCurrentWeek()" class="ml-3 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors shadow-sm">
+                    Today
+                </button>
+            </div>
         </header>
 
         <!-- Dashboard Grid -->
@@ -163,29 +183,23 @@
                     <form id="add-expense-form" class="space-y-3">
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
-                            <input type="text" id="desc-input" placeholder="e.g., Groceries, Gas" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                            <input type="text" id="desc-input" placeholder="e.g., Groceries, Gas" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount ($)</label>
-                                <input type="number" id="amount-input" step="0.01" placeholder="0.00" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                <input type="number" id="amount-input" step="0.01" placeholder="0.00" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Day</label>
-                                <select id="day-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                                    <option value="0">Sunday</option>
-                                    <option value="1">Monday</option>
-                                    <option value="2">Tuesday</option>
-                                    <option value="3">Wednesday</option>
-                                    <option value="4">Thursday</option>
-                                    <option value="5">Friday</option>
-                                    <option value="6">Saturday</option>
-                                </select>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date</label>
+                                <input type="date" id="date-input" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                             </div>
                         </div>
+                        <!-- Hidden day input for backward compatibility -->
+                        <input type="hidden" id="day-input" value="0">
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Who paid?</label>
-                            <select id="who-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                            <select id="who-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                 <option value="Jonathan">Jonathan</option>
                                 <option value="Kathy">Kathy</option>
                                 <option value="Both">Both</option>
@@ -230,11 +244,11 @@
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Current Savings</label>
-                    <input type="number" id="edit-current-savings" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded mt-1">
+                    <input type="number" id="edit-current-savings" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded mt-1">
                 </div>
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Goal Amount</label>
-                    <input type="number" id="edit-goal-amount" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded mt-1">
+                    <input type="number" id="edit-goal-amount" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded mt-1">
                 </div>
             </div>
             <button onclick="saveGoals()" class="mt-4 w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600">Save Changes</button>
@@ -248,7 +262,7 @@
             <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Daily Limit</h3>
             <div>
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Max Savings per Person/Day</label>
-                <input type="number" id="edit-daily-max" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded mt-1">
+                <input type="number" id="edit-daily-max" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded mt-1">
             </div>
             <button onclick="saveMax()" class="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600">Update Limit</button>
             <button onclick="closeModal('max-modal')" class="mt-2 w-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-sm">Cancel</button>
@@ -262,29 +276,23 @@
             <form id="edit-expense-form" class="space-y-3">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Description</label>
-                    <input type="text" id="edit-desc-input" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <input type="text" id="edit-desc-input" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount ($)</label>
-                        <input type="number" id="edit-amount-input" step="0.01" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <input type="number" id="edit-amount-input" step="0.01" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Day</label>
-                        <select id="edit-day-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                            <option value="0">Sunday</option>
-                            <option value="1">Monday</option>
-                            <option value="2">Tuesday</option>
-                            <option value="3">Wednesday</option>
-                            <option value="4">Thursday</option>
-                            <option value="5">Friday</option>
-                            <option value="6">Saturday</option>
-                        </select>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date</label>
+                        <input type="date" id="edit-date-input" required class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                     </div>
                 </div>
+                <!-- Hidden day input for backward compatibility -->
+                <input type="hidden" id="edit-day-input" value="0">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Who paid?</label>
-                    <select id="edit-who-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    <select id="edit-who-input" class="w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text:white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                         <option value="Jonathan">Jonathan</option>
                         <option value="Kathy">Kathy</option>
                         <option value="Both">Both</option>
@@ -300,6 +308,80 @@
     </div>
 
     <script>
+        // --- State ---
+        let expenses = [
+            { id: 1, desc: "Expense 1", amount: 10.00, who: "Both", day: 1, date: "2025-11-17" },
+            { id: 2, desc: "Expense 2", amount: 20.00, who: "Both", day: 2, date: "2025-11-18" },
+            { id: 3, desc: "Expense 3", amount: 30.00, who: "Both", day: 3, date: "2025-11-19" },
+            { id: 4, desc: "Expense 5", amount: 40.00, who: "Kathy", day: 5, date: "2025-11-21" },
+        ];
+
+        let selectedExpenseId = null;
+        let savingsChart = null;
+
+        // --- Week Navigation State ---
+        let currentWeekStart = null; // Date object for current week's Sunday
+        let currentWeekEnd = null;   // Date object for current week's Saturday
+
+        // --- Week Navigation Functions ---
+        function calculateWeekRange(referenceDate) {
+            const date = new Date(referenceDate);
+            const day = date.getDay();
+            const sunday = new Date(date);
+            sunday.setDate(date.getDate() - day);
+            
+            const saturday = new Date(sunday);
+            saturday.setDate(sunday.getDate() + 6);
+            
+            return { start: sunday, end: saturday };
+        }
+
+        function navigateWeek(direction) {
+            const newStart = new Date(currentWeekStart);
+            newStart.setDate(currentWeekStart.getDate() + (direction * 7));
+            newStart.setHours(0, 0, 0, 0);
+            
+            const weekRange = calculateWeekRange(newStart);
+            currentWeekStart = weekRange.start;
+            currentWeekEnd = weekRange.end;
+            
+            updateWeekDisplay();
+            fetchAllData();
+        }
+
+        function goToCurrentWeek() {
+            const today = new Date();
+            const weekRange = calculateWeekRange(today);
+            currentWeekStart = weekRange.start;
+            currentWeekEnd = weekRange.end;
+            
+            updateWeekDisplay();
+            fetchAllData();
+        }
+
+        function updateWeekDisplay() {
+            const startMonth = currentWeekStart.toLocaleDateString('en-US', { month: 'short' });
+            const endMonth = currentWeekEnd.toLocaleDateString('en-US', { month: 'short' });
+            const startDay = currentWeekStart.getDate();
+            const endDay = currentWeekEnd.getDate();
+            const year = currentWeekEnd.getFullYear();
+            
+            let displayText;
+            if (startMonth === endMonth) {
+                displayText = `${startMonth} ${startDay}-${endDay}, ${year}`;
+            } else {
+                displayText = `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`;
+            }
+            
+            document.getElementById('week-display').textContent = displayText;
+        }
+
+        // --- Configuration ---
+        // In a real app, these would be null initially and populated by fetch()
+        let DAILY_MAX = 50;
+        let HOUSE_GOAL = 50000;
+        let currentTotalSavings = 12450; 
+        
         // --- Theme Logic ---
         function initTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -324,25 +406,23 @@
         // Initialize Theme immediately
         initTheme();
 
-        // --- Configuration ---
-        // In a real app, these would be null initially and populated by fetch()
-        let DAILY_MAX = 50;
-        let HOUSE_GOAL = 50000;
-        let currentTotalSavings = 12450; 
-        
-        // --- State ---
-        let expenses = [
-            { id: 1, desc: "Expense 1", amount: 10.00, who: "Both", day: 1 },
-            { id: 2, desc: "Expense 2", amount: 20.00, who: "Both", day: 2 },
-            { id: 3, desc: "Expense 3", amount: 30.00, who: "Both", day: 3 },
-            { id: 4, desc: "Expense 5", amount: 40.00, who: "Kathy", day: 5 },
-        ];
-
-        let selectedExpenseId = null;
-        let savingsChart = null;
-
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize current week
+            goToCurrentWeek();
+            
+            // Set default date to current date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-input').value = today;
+            
+            // Sync date and day inputs
+            document.getElementById('date-input').addEventListener('change', (e) => {
+                const dateParts = e.target.value.split('-').map(Number);
+                const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); // YYYY, MM (0-indexed), DD
+                const day = dateObj.getDay();
+                document.getElementById('day-input').value = day;
+            });
+            
             // Uncomment to use real backend:
             fetchAllData();
             updateUI();
@@ -351,7 +431,11 @@
         // --- Data Fetching (Simulated) ---
         async function fetchAllData() {
             try {
-                const res = await fetch('http://localhost:5000/api/data');
+                // Format dates for API
+                const startDate = currentWeekStart.toISOString().split('T')[0];
+                const endDate = currentWeekEnd.toISOString().split('T')[0];
+                
+                const res = await fetch(`http://localhost:5100/api/data?start_date=${startDate}&end_date=${endDate}`);
                 const data = await res.json();
                 
                 DAILY_MAX = data.settings.daily_max;
@@ -361,7 +445,9 @@
                 
                 updateUI();
             } catch (e) {
-                console.error("Failed to fetch backend data. Is app.py running?");
+                console.error("Failed to fetch backend data. Is app.py running?", e);
+                // Fallback to existing data if API is not available
+                updateUI();
             }
         }
 
@@ -374,7 +460,13 @@
                 Kathy: Array(7).fill(DAILY_MAX)
             };
 
-            expenses.forEach(exp => {
+            // Filter expenses by current week and group by day of week
+            const weekExpenses = expenses.filter(exp => {
+                const expDate = new Date(exp.date);
+                return expDate >= currentWeekStart && expDate <= currentWeekEnd;
+            });
+
+            weekExpenses.forEach(exp => {
                 const person = exp.who; // "Jonathan" or "Kathy" or "Both" or "Neither"
                 const day = parseInt(exp.day);
                 
@@ -428,10 +520,19 @@
             const list = document.getElementById('expense-list');
             list.innerHTML = '';
 
-            const sortedExpenses = [...expenses].sort((a, b) => b.id - a.id);
+            // Filter expenses by current week
+            const weekExpenses = expenses.filter(exp => {
+                const expDate = new Date(exp.date);
+                return expDate >= currentWeekStart && expDate <= currentWeekEnd;
+            });
+
+            const sortedExpenses = [...weekExpenses].sort((a, b) => b.id - a.id);
 
             sortedExpenses.forEach(exp => {
                 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const expDate = new Date(exp.date);
+                const dayName = days[expDate.getDay()];
+                const dateString = expDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
                 const item = document.createElement('div');
                 item.className = 'p-3 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition cursor-pointer flex justify-between items-center group border border-transparent dark:border-gray-600';
@@ -449,7 +550,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-gray-800 dark:text-gray-100">${exp.desc}</p>
-                            <span class="text-[10px] text-gray-400 dark:text-gray-400">${days[exp.day]}</span>
+                            <span class="text-[10px] text-gray-400 dark:text-gray-400">${dayName}, ${dateString}</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -467,6 +568,18 @@
                 `;
                 list.appendChild(item);
             });
+
+            // Show message if no expenses for selected week
+            if (sortedExpenses.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'text-center py-8 text-gray-400 dark:text-gray-500';
+                emptyState.innerHTML = `
+                    <i class="fas fa-calendar-times text-3xl mb-2"></i>
+                    <p>No expenses for this week</p>
+                    <p class="text-xs">Add expenses to see them here</p>
+                `;
+                list.appendChild(emptyState);
+            }
         }
 
         function updateTimeline(weekData) {
@@ -568,7 +681,7 @@
         async function assignExpense(who) {
             if (selectedExpenseId !== null) {
                 try {
-                    const res = await fetch(`http://localhost:5000/api/expenses/${selectedExpenseId}`, {
+                    const res = await fetch(`http://localhost:5100/api/expenses/${selectedExpenseId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ who })
@@ -597,7 +710,7 @@
             const houseGoal = parseFloat(document.getElementById('edit-goal-amount').value);
             
             try {
-                const res = await fetch('http://localhost:5000/api/settings', {
+                const res = await fetch('http://localhost:5100/api/settings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ current_savings: currentSavings, house_goal: houseGoal })
@@ -622,7 +735,7 @@
         async function saveMax() {
             const dailyMax = parseFloat(document.getElementById('edit-daily-max').value);
             try {
-                const res = await fetch('http://localhost:5000/api/settings', {
+                const res = await fetch('http://localhost:5100/api/settings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ daily_max: dailyMax })
@@ -641,12 +754,32 @@
         // 4. Edit Expense Modal
         function openEditExpenseModal(id) {
             selectedExpenseId = id;
+            
             const exp = expenses.find(e => e.id === id);
             if (exp) {
                 document.getElementById('edit-desc-input').value = exp.desc;
                 document.getElementById('edit-amount-input').value = exp.amount;
                 document.getElementById('edit-day-input').value = exp.day;
                 document.getElementById('edit-who-input').value = exp.who;
+                // Set date input if date field exists, otherwise use a default date based on day
+                if (exp.date) {
+                    document.getElementById('edit-date-input').value = exp.date;
+                } else {
+                    // Fallback: create a date based on current week and day
+                    const fallbackDate = new Date(currentWeekStart);
+                    fallbackDate.setDate(currentWeekStart.getDate() + parseInt(exp.day));
+                    document.getElementById('edit-date-input').value = fallbackDate.toISOString().split('T')[0];
+                }
+                
+                // Add event listener to sync date and day inputs for edit form
+                const editDateInput = document.getElementById('edit-date-input');
+                editDateInput.addEventListener('change', (e) => {
+                    const dateParts = e.target.value.split('-').map(Number);
+                    const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); // YYYY, MM (0-indexed), DD
+                    const day = dateObj.getDay();
+                    document.getElementById('edit-day-input').value = day;
+                }, { once: true }); // Remove listener after first use to prevent duplicates
+                
                 document.getElementById('edit-expense-modal').classList.remove('hidden');
             }
         }
@@ -658,13 +791,14 @@
             const desc = document.getElementById('edit-desc-input').value;
             const amount = parseFloat(document.getElementById('edit-amount-input').value);
             const who = document.getElementById('edit-who-input').value;
+            const date = document.getElementById('edit-date-input').value;
             const day = parseInt(document.getElementById('edit-day-input').value);
 
             try {
-                const res = await fetch(`http://localhost:5000/api/expenses/${selectedExpenseId}`, {
+                const res = await fetch(`http://localhost:5100/api/expenses/${selectedExpenseId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ desc, amount, day, who })
+                    body: JSON.stringify({ desc, amount, day, who, date })
                 });
                 if (res.ok) {
                     closeModal('edit-expense-modal');
@@ -680,7 +814,7 @@
         async function deleteExpense(id) {
             if (confirm('Are you sure you want to delete this expense?')) {
                 try {
-                    const res = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+                    const res = await fetch(`http://localhost:5100/api/expenses/${id}`, {
                         method: 'DELETE'
                     });
                     if (res.ok) {
@@ -703,16 +837,26 @@
             const desc = document.getElementById('desc-input').value;
             const amount = parseFloat(document.getElementById('amount-input').value);
             const who = document.getElementById('who-input').value;
-            const day = parseInt(document.getElementById('day-input').value);
+            const date = document.getElementById('date-input').value;
+            
+            // Convert date to day of week for backward compatibility
+            const dateObj = new Date(date);
+            const day = dateObj.getDay();
 
             try {
-                const res = await fetch('http://localhost:5000/api/expenses', {
+                const requestBody = { desc, amount, who, day, date };
+                const res = await fetch('http://localhost:5100/api/expenses', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ desc, amount, who, day })
+                    body: JSON.stringify(requestBody)
                 });
                 if (res.ok) {
                     e.target.reset();
+                    // Reset date to current date
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('date-input').value = today;
+                    // Reset day to 0 (Sunday)
+                    document.getElementById('day-input').value = '0';
                     fetchAllData();
                 } else {
                     console.error('Failed to add expense');
