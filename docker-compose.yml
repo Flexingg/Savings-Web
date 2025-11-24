@@ -5,3 +5,7 @@ services:
     build: .
     ports:
       - "5100:5100"
+    volumes:
+      - db_data:/app/data # Mount the named volume to a directory
+volumes:
+  db_data: # Define the named volume

@@ -11,7 +11,7 @@ CORS(app)  # Allows cross-origin requests if you develop separately, but good to
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-DATABASE = 'savings.db'
+DATABASE = 'data/savings.db'
 
 # --- Date Helper Functions ---
 

@@ -89,7 +89,7 @@
 
             <!-- Week Navigation Controls -->
             <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-xl p-3 mt-4">
-                <button onclick="navigateWeek(-1)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
+                <button onclick="navigateWeek(-1, event)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
                     <i class="fas fa-chevron-left text-gray-600 dark:text-gray-300"></i>
                 </button>
                 
@@ -98,11 +98,11 @@
                     <div class="text-xs text-gray-500 dark:text-gray-400">Current Week</div>
                 </div>
                 
-                <button onclick="navigateWeek(1)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
+                <button onclick="navigateWeek(1, event)" class="p-2 rounded-lg bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors shadow-sm">
                     <i class="fas fa-chevron-right text-gray-600 dark:text-gray-300"></i>
                 </button>
                 
-                <button onclick="goToCurrentWeek()" class="ml-3 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors shadow-sm">
+                <button onclick="goToCurrentWeek(event)" class="ml-3 px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors shadow-sm">
                     Today
                 </button>
             </div>
@@ -324,6 +324,13 @@
         let currentWeekEnd = null;   // Date object for current week's Saturday
 
         // --- Week Navigation Functions ---
+        function formatDateLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function calculateWeekRange(referenceDate) {
             const date = new Date(referenceDate);
             const day = date.getDay();
@@ -336,7 +343,8 @@
             return { start: sunday, end: saturday };
         }
 
-        function navigateWeek(direction) {
+        function navigateWeek(direction, event) {
+            if (event) event.stopPropagation(); // Prevent event bubbling
             const newStart = new Date(currentWeekStart);
             newStart.setDate(currentWeekStart.getDate() + (direction * 7));
             newStart.setHours(0, 0, 0, 0);
@@ -349,8 +357,10 @@
             fetchAllData();
         }
 
-        function goToCurrentWeek() {
+        function goToCurrentWeek(event) {
+            if (event) event.stopPropagation(); // Prevent event bubbling
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
             const weekRange = calculateWeekRange(today);
             currentWeekStart = weekRange.start;
             currentWeekEnd = weekRange.end;
@@ -412,7 +422,7 @@
             goToCurrentWeek();
             
             // Set default date to current date
-            const today = new Date().toISOString().split('T')[0];
+            const today = formatDateLocal(new Date());
             document.getElementById('date-input').value = today;
             
             // Sync date and day inputs
@@ -432,8 +442,8 @@
         async function fetchAllData() {
             try {
                 // Format dates for API
-                const startDate = currentWeekStart.toISOString().split('T')[0];
-                const endDate = currentWeekEnd.toISOString().split('T')[0];
+                const startDate = formatDateLocal(currentWeekStart);
+                const endDate = formatDateLocal(currentWeekEnd);
                 
                 const res = await fetch(`http://localhost:5100/api/data?start_date=${startDate}&end_date=${endDate}`);
                 const data = await res.json();
@@ -461,9 +471,11 @@
             };
 
             // Filter expenses by current week and group by day of week
+            const startStr = formatDateLocal(currentWeekStart);
+            const endStr = formatDateLocal(currentWeekEnd);
+
             const weekExpenses = expenses.filter(exp => {
-                const expDate = new Date(exp.date);
-                return expDate >= currentWeekStart && expDate <= currentWeekEnd;
+                return exp.date >= startStr && exp.date <= endStr;
             });
 
             weekExpenses.forEach(exp => {
@@ -521,9 +533,11 @@
             list.innerHTML = '';
 
             // Filter expenses by current week
+            const startStr = formatDateLocal(currentWeekStart);
+            const endStr = formatDateLocal(currentWeekEnd);
+
             const weekExpenses = expenses.filter(exp => {
-                const expDate = new Date(exp.date);
-                return expDate >= currentWeekStart && expDate <= currentWeekEnd;
+                return exp.date >= startStr && exp.date <= endStr;
             });
 
             const sortedExpenses = [...weekExpenses].sort((a, b) => b.id - a.id);
@@ -768,7 +782,7 @@
                     // Fallback: create a date based on current week and day
                     const fallbackDate = new Date(currentWeekStart);
                     fallbackDate.setDate(currentWeekStart.getDate() + parseInt(exp.day));
-                    document.getElementById('edit-date-input').value = fallbackDate.toISOString().split('T')[0];
+                    document.getElementById('edit-date-input').value = formatDateLocal(fallbackDate);
                 }
                 
                 // Add event listener to sync date and day inputs for edit form
@@ -840,7 +854,8 @@
             const date = document.getElementById('date-input').value;
             
             // Convert date to day of week for backward compatibility
-            const dateObj = new Date(date);
+            const dateParts = date.split('-').map(Number);
+            const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
             const day = dateObj.getDay();
 
             try {
@@ -853,7 +868,7 @@
                 if (res.ok) {
                     e.target.reset();
                     // Reset date to current date
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = formatDateLocal(new Date());
                     document.getElementById('date-input').value = today;
                     // Reset day to 0 (Sunday)
                     document.getElementById('day-input').value = '0';
